@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// Enum para tipos de combustible
+enum FuelType {
+    GASOLINE
+    DIESEL
+    ELECTRIC
+    HYBRID
+    OTHER
+}
+
+// Modelo de Usuario
+model User {
+    id            Int      @id @default(autoincrement())
+    contributions Int      @default(0)
+    name          String
+    email         String   @unique
+    password      String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    @@map("users")
+}
+
+// Modelo de Marca
+model Brand {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    country   String
+    logo      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    cars Car[]
+
+    @@map("brands")
+}
+
+// Modelo de Modelo de vehículo
+model Model {
+    id               Int      @id @default(autoincrement())
+    name             String
+    year             Int
+    cylinderCapacity Int
+    transmission     String
+    horsePower       Int
+    fuelType         FuelType
+    weight           Int
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    cars Car[]
+
+    @@map("models")
+}
+
+// Modelo de Auto
+model Car {
+    id        Int      @id @default(autoincrement())
+    brandId   Int
+    modelId   Int
+    year      Int
+    price     Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+    model Model @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+    @@map("cars")
+}
