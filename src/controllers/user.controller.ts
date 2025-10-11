@@ -3,15 +3,15 @@ import { prisma } from "../config/database";
 
 class UserController {
   // Obtener todos los usuarios
-  async getAllUsers(req: Request, res: Response) {
+  async getAllUsers(_: Request, res: Response) {
     try {
       const users = await prisma.user.findMany();
-      res.json({
+      return res.status(200).json({
         success: true,
         data: users,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al obtener usuarios",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -34,12 +34,12 @@ class UserController {
         });
       }
 
-      res.json({
+      return res.status(200).json({
         success: true,
         data: user,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al obtener usuario",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -54,13 +54,13 @@ class UserController {
         data: req.body,
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         data: user,
         message: "Usuario creado exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al crear usuario",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -77,13 +77,13 @@ class UserController {
         data: req.body,
       });
 
-      res.json({
+      return res.status(200).json({
         success: true,
         data: user,
         message: "Usuario actualizado exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al actualizar usuario",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -99,12 +99,12 @@ class UserController {
         where: { id: parseInt(id) },
       });
 
-      res.json({
+      return res.status(200).json({
         success: true,
         message: "Usuario eliminado exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al eliminar usuario",
         error: error instanceof Error ? error.message : "Error desconocido",

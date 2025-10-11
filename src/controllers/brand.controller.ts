@@ -6,12 +6,12 @@ class BrandController {
   async getAllBrands(_: Request, res: Response) {
     try {
       const brands = await prisma.brand.findMany();
-      res.json({
+      return res.status(200).json({
         success: true,
         data: brands,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al obtener marcas",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -34,12 +34,12 @@ class BrandController {
         });
       }
 
-      res.json({
+      return res.status(200).json({
         success: true,
         data: brand,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al obtener marca",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -54,13 +54,13 @@ class BrandController {
         data: req.body,
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         data: brand,
         message: "Marca creada exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al crear marca",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -77,13 +77,13 @@ class BrandController {
         data: req.body,
       });
 
-      res.json({
+      return res.status(200).json({
         success: true,
         data: brand,
         message: "Marca actualizada exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al actualizar marca",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -99,12 +99,12 @@ class BrandController {
         where: { id: parseInt(id) },
       });
 
-      res.json({
+      return res.status(200).json({
         success: true,
         message: "Marca eliminada exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al eliminar marca",
         error: error instanceof Error ? error.message : "Error desconocido",

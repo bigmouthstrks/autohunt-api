@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 
 class HealthController {
   // Health check endpoint
-  async healthCheck(req: Request, res: Response) {
-    res.json({
+  async healthCheck(_: Request, res: Response) {
+    return res.status(200).json({
       success: true,
       message: "🚀 API AutoHunt funcionando correctamente",
       data: {
@@ -18,17 +18,17 @@ class HealthController {
   }
 
   // Readiness check
-  async readinessCheck(req: Request, res: Response) {
+  async readinessCheck(_: Request, res: Response) {
     try {
       // Aquí puedes agregar verificaciones adicionales
       // Por ejemplo: verificar conexión a la base de datos
-      res.json({
+      return res.status(200).json({
         success: true,
         status: "ready",
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
-      res.status(503).json({
+      return res.status(503).json({
         success: false,
         status: "not ready",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -37,8 +37,8 @@ class HealthController {
   }
 
   // Liveness check
-  async livenessCheck(req: Request, res: Response) {
-    res.json({
+  async livenessCheck(_: Request, res: Response) {
+    return res.status(200).json({
       success: true,
       status: "alive",
       timestamp: new Date().toISOString(),

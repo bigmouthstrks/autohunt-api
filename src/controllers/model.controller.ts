@@ -3,15 +3,15 @@ import { prisma } from "../config/database";
 
 class ModelController {
   // Obtener todos los modelos
-  async getAllModels(req: Request, res: Response) {
+  async getAllModels(_: Request, res: Response) {
     try {
       const models = await prisma.model.findMany();
-      res.json({
+      return res.status(200).json({
         success: true,
         data: models,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al obtener modelos",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -34,12 +34,12 @@ class ModelController {
         });
       }
 
-      res.json({
+      return res.status(200).json({
         success: true,
         data: model,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al obtener modelo",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -54,13 +54,13 @@ class ModelController {
         data: req.body,
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         data: model,
         message: "Modelo creado exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al crear modelo",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -77,13 +77,13 @@ class ModelController {
         data: req.body,
       });
 
-      res.json({
+      return res.status(200).json({
         success: true,
         data: model,
         message: "Modelo actualizado exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al actualizar modelo",
         error: error instanceof Error ? error.message : "Error desconocido",
@@ -99,12 +99,12 @@ class ModelController {
         where: { id: parseInt(id) },
       });
 
-      res.json({
+      return res.status(200).json({
         success: true,
         message: "Modelo eliminado exitosamente",
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Error al eliminar modelo",
         error: error instanceof Error ? error.message : "Error desconocido",
