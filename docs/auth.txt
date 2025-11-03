@@ -1,0 +1,129 @@
+AutoHunt API - Autenticación (texto plano)
+
+1) Registro de usuario
+- Método y ruta: POST /api/users
+- Headers:
+  Content-Type: application/json
+- Body (request):
+{
+  "name": "Juan Pérez",
+  "email": "juan@example.com",
+  "password": "MiClaveSegura123"
+}
+
+- Respuesta 201 (éxito):
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "contributions": 0,
+    "name": "Juan Pérez",
+    "email": "juan@example.com",
+    "createdAt": "2025-11-03T12:00:00.000Z",
+    "updatedAt": "2025-11-03T12:00:00.000Z"
+  },
+  "message": "Usuario creado exitosamente"
+}
+
+- Respuesta 400 (faltan campos):
+{
+  "success": false,
+  "message": "Faltan campos requeridos"
+}
+
+- Respuesta 409 (email duplicado):
+{
+  "success": false,
+  "message": "Email ya registrado"
+}
+
+- Respuesta 500 (error interno):
+{
+  "success": false,
+  "message": "Error al crear usuario",
+  "error": "Detalle del error"
+}
+
+- Ejemplo curl:
+curl -X POST "http://localhost:3000/api/users" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Juan Pérez",
+    "email": "juan@example.com",
+    "password": "MiClaveSegura123"
+  }'
+
+
+2) Login de usuario
+- Método y ruta: POST /api/users/login
+- Headers:
+  Content-Type: application/json
+- Body (request):
+{
+  "email": "juan@example.com",
+  "password": "MiClaveSegura123"
+}
+
+- Respuesta 200 (éxito):
+{
+  "success": true,
+  "token": "jwt.aquí.va.el.token",
+  "user": {
+    "id": 1,
+    "contributions": 0,
+    "name": "Juan Pérez",
+    "email": "juan@example.com",
+    "createdAt": "2025-11-03T12:00:00.000Z",
+    "updatedAt": "2025-11-03T12:00:00.000Z"
+  }
+}
+
+- Respuesta 400 (faltan campos):
+{
+  "success": false,
+  "message": "Email y contraseña requeridos"
+}
+
+- Respuesta 401 (credenciales inválidas):
+{
+  "success": false,
+  "message": "Credenciales inválidas"
+}
+
+- Respuesta 500 (error interno):
+{
+  "success": false,
+  "message": "Error al iniciar sesión",
+  "error": "Detalle del error"
+}
+
+- Ejemplo curl:
+curl -X POST "http://localhost:3000/api/users/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "juan@example.com",
+    "password": "MiClaveSegura123"
+  }'
+
+
+3) Uso del token en rutas privadas
+- Header requerido:
+  Authorization: Bearer <tu_token_jwt>
+
+- Ejemplo curl (GET usuarios protegido):
+curl -X GET "http://localhost:3000/api/users" \
+  -H "Authorization: Bearer <tu_token_jwt>"
+
+
+4) Rutas públicas
+- GET /
+- GET /api/health (y subrutas de health)
+- POST /api/users (registro)
+- POST /api/users/login (login)
+
+
+5) Variables de entorno relevantes
+- JWT_SECRET: clave para firmar/verificar tokens (obligatoria en producción)
+- JWT_EXPIRES_IN: tiempo de expiración (por defecto "1d")
+
+

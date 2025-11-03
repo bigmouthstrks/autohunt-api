@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/database";
+import { hashPassword, verifyPassword, signToken } from "../utils/auth";
 
 class UserController {
   // Obtener todos los usuarios
@@ -50,13 +51,35 @@ class UserController {
   // Crear un nuevo usuario
   async createUser(req: Request, res: Response) {
     try {
+      const { name, email, password } = req.body as {
+        name: string;
+        email: string;
+        password: string;
+      };
+
+      if (!name || !email || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "Faltan campos requeridos",
+        });
+      }
+
+      const existing = await prisma.user.findUnique({ where: { email } });
+      if (existing) {
+        return res
+          .status(409)
+          .json({ success: false, message: "Email ya registrado" });
+      }
+
+      const hashed = await hashPassword(password);
       const user = await prisma.user.create({
-        data: req.body,
+        data: { name, email, password: hashed },
       });
 
+      const { password: _pwd, ...userSafe } = user;
       return res.status(201).json({
         success: true,
-        data: user,
+        data: userSafe,
         message: "Usuario creado exitosamente",
       });
     } catch (error) {
@@ -77,9 +100,10 @@ class UserController {
         data: req.body,
       });
 
+      const { password: _pwd, ...userSafe } = user;
       return res.status(200).json({
         success: true,
-        data: user,
+        data: userSafe,
         message: "Usuario actualizado exitosamente",
       });
     } catch (error) {
@@ -107,6 +131,45 @@ class UserController {
       return res.status(500).json({
         success: false,
         message: "Error al eliminar usuario",
+        error: error instanceof Error ? error.message : "Error desconocido",
+      });
+    }
+  }
+
+  // Login de usuario
+  async login(req: Request, res: Response) {
+    try {
+      const { email, password } = req.body as {
+        email: string;
+        password: string;
+      };
+      if (!email || !password) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Email y contraseña requeridos" });
+      }
+
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Credenciales inválidas" });
+      }
+
+      const ok = await verifyPassword(password, user.password);
+      if (!ok) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Credenciales inválidas" });
+      }
+
+      const token = signToken({ userId: user.id, email: user.email });
+      const { password: _pwd, ...userSafe } = user;
+      return res.status(200).json({ success: true, token, user: userSafe });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Error al iniciar sesión",
         error: error instanceof Error ? error.message : "Error desconocido",
       });
     }
