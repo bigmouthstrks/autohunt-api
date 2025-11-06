@@ -14,6 +14,11 @@ app.use(cors());
 app.use(express.json({ limit: "512kb" }));
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, _res, next) => {
+  console.log(`[hit] ${req.method} ${req.originalUrl} ct=${req.headers["content-type"]}`);
+  next();
+});
+
 // Desencripta si el body viene como envelope o si llega header de cifrado
 // Si usas AAD, el cliente debe firmar "METHOD:/api/route" (ej. "POST:/api/users/login")
 app.use(decryptBodyMiddleware({ bindToMethodAndPath: true })); // ⬅️ nuevo

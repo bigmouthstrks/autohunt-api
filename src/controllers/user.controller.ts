@@ -139,6 +139,8 @@ class UserController {
   // Login de usuario
   async login(req: Request, res: Response) {
     try {
+      console.log("[login] keys:", Object.keys(req.body || {}));
+
       const { email, password } = req.body as {
         email: string;
         password: string;
