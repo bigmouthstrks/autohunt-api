@@ -165,7 +165,7 @@ class UserController {
 
       const token = signToken({ userId: user.id, email: user.email });
       const { password: _pwd, ...userSafe } = user;
-      return res.status(200).json({ success: true, token, user: userSafe });
+      return res.status(200).json({ success: true, token, data: userSafe });
     } catch (error) {
       return res.status(500).json({
         success: false,
