@@ -29,6 +29,8 @@ model User {
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 
+    maintenances Maintenance[]
+
     @@map("users")
 }
 
@@ -78,4 +80,41 @@ model Car {
     model Model @relation(fields: [modelId], references: [id], onDelete: Cascade)
 
     @@map("cars")
+}
+
+enum MaintenanceType {
+    REPAIR
+    MAINTENANCE
+    PART_CHANGE
+}
+
+// Modelo de Mantención
+model Maintenance {
+    id          Int             @id @default(autoincrement())
+    title       String
+    description String?
+    type        MaintenanceType
+    date        DateTime
+    userId      Int
+    workshopId  Int
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+
+    user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    workshop Workshop  @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+
+    @@map("maintenances")
+}
+
+// Modelo de Taller
+model Workshop {
+    id        Int           @id @default(autoincrement())
+    name      String
+    address   String
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+
+    maintenances Maintenance[]
+
+    @@map("workshops")
 }

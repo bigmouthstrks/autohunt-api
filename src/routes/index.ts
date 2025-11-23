@@ -4,6 +4,8 @@ import userRoutes from "./user.routes";
 import carRoutes from "./car.routes";
 import modelRoutes from "./model.routes";
 import brandRoutes from "./brand.routes";
+import maintenanceRoutes from "./maintenance.routes";
+import workshopRoutes from "./workshop.routes";
 
 const router = Router();
 
@@ -13,5 +15,7 @@ router.use("/users", userRoutes);
 router.use("/cars", carRoutes);
 router.use("/models", modelRoutes);
 router.use("/brands", brandRoutes);
+router.use("/maintenance", maintenanceRoutes);
+router.use("/workshops", workshopRoutes);
 
 export default router;
