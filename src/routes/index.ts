@@ -6,6 +6,7 @@ import modelRoutes from "./model.routes";
 import brandRoutes from "./brand.routes";
 import maintenanceRoutes from "./maintenance.routes";
 import workshopRoutes from "./workshop.routes";
+import vehicleRoutes from "./vehicle.routes";
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.use("/models", modelRoutes);
 router.use("/brands", brandRoutes);
 router.use("/maintenance", maintenanceRoutes);
 router.use("/workshops", workshopRoutes);
+router.use("/vehicles", vehicleRoutes);
 
 export default router;

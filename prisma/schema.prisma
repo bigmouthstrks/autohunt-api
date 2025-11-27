@@ -30,6 +30,7 @@ model User {
     updatedAt     DateTime @updatedAt
 
     maintenances Maintenance[]
+    vehicles     Vehicle[]
 
     @@map("users")
 }
@@ -117,4 +118,21 @@ model Workshop {
     maintenances Maintenance[]
 
     @@map("workshops")
+}
+
+// Modelo de Vehículo del Usuario
+model Vehicle {
+    id        Int      @id @default(autoincrement())
+    brand     String
+    model     String
+    year      Int
+    mileage   Int
+    alias     String
+    userId    Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("vehicles")
 }
