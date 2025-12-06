@@ -26,7 +26,7 @@ const formatMaintenance = (
 
 class MaintenanceController {
   // Obtener todas las mantenciones del usuario autenticado
-  async getAllMaintenances(req: Request, res: Response) {
+  async getAllMaintenances(_: Request, res: Response) {
     try {
       const userId = res.locals.user?.userId;
 

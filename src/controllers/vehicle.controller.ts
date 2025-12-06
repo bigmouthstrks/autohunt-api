@@ -16,7 +16,7 @@ const formatVehicle = (vehicle: Vehicle) => ({
 
 class VehicleController {
   // Obtener todos los vehículos del usuario autenticado
-  async getAllVehicles(req: Request, res: Response) {
+  async getAllVehicles(_: Request, res: Response) {
     try {
       const userId = res.locals.user?.userId;
 
