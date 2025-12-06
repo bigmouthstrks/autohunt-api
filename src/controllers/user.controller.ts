@@ -167,7 +167,19 @@ class UserController {
 
       const token = signToken({ userId: user.id, email: user.email });
       const { password: _pwd, ...userSafe } = user;
-      return res.status(200).json({ success: true, token, data: userSafe });
+
+      // Determinar si el usuario necesita onboarding basándose en si tiene vehículos
+      const vehicleCount = await prisma.vehicle.count({
+        where: { userId: user.id }
+      });
+      const needsOnboarding = vehicleCount === 0;
+
+      return res.status(200).json({
+        success: true,
+        token,
+        data: userSafe,
+        needsOnboarding
+      });
     } catch (error) {
       return res.status(500).json({
         success: false,
