@@ -210,6 +210,15 @@ const maintenanceTypes = [
   { name: "Rotación de neumáticos", description: "Rotación y balanceo" },
 ];
 
+const fuelTypes = [
+  { name: "Gasolina", description: "Motor a gasolina" },
+  { name: "Diésel", description: "Motor diésel" },
+  { name: "Eléctrico", description: "Motor eléctrico" },
+  { name: "Híbrido", description: "Motor híbrido gasolina/eléctrico" },
+  { name: "GLP", description: "Gas licuado de petróleo" },
+  { name: "GNC", description: "Gas natural comprimido" },
+];
+
 async function main() {
   const countryByCode = new Map<string, { id: number }>();
 
@@ -278,6 +287,14 @@ async function main() {
     });
   }
 
+  for (const type of fuelTypes) {
+    await prisma.fuelType.upsert({
+      where: { name: type.name },
+      update: { description: type.description },
+      create: type,
+    });
+  }
+
   const chile = countryByCode.get("CHL");
   if (!chile) {
     throw new Error("País Chile no encontrado");
@@ -287,8 +304,12 @@ async function main() {
     where: { email: "demo@autohunt.dev" },
     update: {},
     create: {
+      username: "demo",
+      firstName: "Usuario",
+      lastName: "Demo",
       name: "Usuario Demo",
       email: "demo@autohunt.dev",
+      emailVerified: true,
       password: await hashPassword("demo12345"),
       countryId: chile.id,
     },

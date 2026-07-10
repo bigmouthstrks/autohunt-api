@@ -24,7 +24,9 @@ describe("validators", () => {
   describe("createUserSchema", () => {
     it("accepts valid user", () => {
       const result = createUserSchema.safeParse({
-        name: "Juan",
+        username: "juanp",
+        firstName: "Juan",
+        lastName: "Pérez",
         email: "juan@example.com",
         password: "password123",
         countryId: 1,
@@ -34,7 +36,9 @@ describe("validators", () => {
 
     it("rejects short password", () => {
       const result = createUserSchema.safeParse({
-        name: "Juan",
+        username: "juanp",
+        firstName: "Juan",
+        lastName: "Pérez",
         email: "juan@example.com",
         password: "short",
       });
@@ -43,7 +47,9 @@ describe("validators", () => {
 
     it("rejects invalid email", () => {
       const result = createUserSchema.safeParse({
-        name: "Juan",
+        username: "juanp",
+        firstName: "Juan",
+        lastName: "Pérez",
         email: "not-an-email",
         password: "password123",
       });
@@ -54,9 +60,12 @@ describe("validators", () => {
   describe("createVehicleSchema", () => {
     it("accepts valid vehicle without userId", () => {
       const result = createVehicleSchema.safeParse({
+        name: "Mi auto",
         brandId: "2",
         modelId: "3",
         vehicleTypeId: "4",
+        countryId: "1",
+        fuelTypeId: "1",
         year: "2024",
         mileage: "0",
       });
@@ -113,7 +122,7 @@ describe("validators", () => {
   describe("loginSchema", () => {
     it("accepts valid login payload", () => {
       const result = loginSchema.safeParse({
-        email: "user@example.com",
+        identifier: "user@example.com",
         password: "secret",
       });
       expect(result.success).toBe(true);

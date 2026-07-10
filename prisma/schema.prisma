@@ -14,6 +14,23 @@ enum UserMaintenanceRole {
   OTHER
 }
 
+enum UserPlan {
+  FREE
+  PREMIUM_TIER_1
+  PREMIUM_TIER_2
+  PREMIUM_TIER_3
+}
+
+enum OAuthProvider {
+  GOOGLE
+  APPLE
+}
+
+enum DocumentStatus {
+  PENDING
+  READY
+}
+
 model Country {
   id        Int      @id @default(autoincrement())
   name      String   @unique
@@ -21,8 +38,9 @@ model Country {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  brands Brand[]
-  users  User[]
+  brands   Brand[]
+  users    User[]
+  vehicles Vehicle[]
 
   @@map("country")
 }
@@ -69,42 +87,105 @@ model VehicleType {
   @@map("vehicle_type")
 }
 
+model FuelType {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  vehicles Vehicle[]
+
+  @@map("fuel_type")
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  countryId Int?     @map("country_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                 Int            @id @default(autoincrement())
+  username           String         @unique
+  firstName          String         @map("first_name")
+  lastName           String         @map("last_name")
+  name               String
+  email              String         @unique
+  password           String?
+  countryId          Int?           @map("country_id")
+  emailVerified      Boolean        @default(false) @map("email_verified")
+  plan               UserPlan       @default(FREE)
+  planVehicleLimit   Int?           @map("plan_vehicle_limit")
+  twoFactorEnabled   Boolean        @default(false) @map("two_factor_enabled")
+  oauthProvider      OAuthProvider? @map("oauth_provider")
+  oauthId            String?        @map("oauth_id")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
 
-  country          Country?          @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  vehicles         Vehicle[]
-  userMaintenances UserMaintenance[]
+  country             Country?             @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  vehicles            Vehicle[]
+  userMaintenances    UserMaintenance[]
+  twoFactorChallenges TwoFactorChallenge[]
+  documents           VehicleDocument[]
 
+  @@unique([oauthProvider, oauthId])
   @@map("user")
 }
 
 model Vehicle {
   id            Int      @id @default(autoincrement())
   userId        Int      @map("user_id")
+  name          String
   brandId       Int      @map("brand_id")
   modelId       Int      @map("model_id")
   vehicleTypeId Int      @map("vehicle_type_id")
-  year          Int
+  countryId     Int      @map("country_id")
+  fuelTypeId    Int      @map("fuel_type_id")
+  cylinder      Decimal? @db.Decimal(4, 1)
+  year          Int?
   vin           String?  @unique
   licensePlate  String?  @map("license_plate")
   mileage       Int      @default(0)
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  brand        Brand         @relation(fields: [brandId], references: [id], onDelete: Restrict)
-  model        Model         @relation(fields: [modelId], references: [id], onDelete: Restrict)
-  vehicleType  VehicleType   @relation(fields: [vehicleTypeId], references: [id], onDelete: Restrict)
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand        Brand             @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  model        Model             @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  vehicleType  VehicleType       @relation(fields: [vehicleTypeId], references: [id], onDelete: Restrict)
+  country      Country           @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  fuelType     FuelType          @relation(fields: [fuelTypeId], references: [id], onDelete: Restrict)
   maintenances Maintenance[]
+  documents    VehicleDocument[]
 
   @@map("vehicle")
+}
+
+model VehicleDocument {
+  id          Int            @id @default(autoincrement())
+  vehicleId   Int            @map("vehicle_id")
+  userId      Int            @map("user_id")
+  name        String
+  description String?
+  fileKey     String         @map("file_key")
+  mimeType    String         @map("mime_type")
+  size        Int
+  status      DocumentStatus @default(PENDING)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_document")
+}
+
+model TwoFactorChallenge {
+  id         String    @id @default(uuid())
+  userId     Int       @map("user_id")
+  code       String
+  expiresAt  DateTime  @map("expires_at")
+  consumedAt DateTime? @map("consumed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("two_factor_challenge")
 }
 
 model MaintenanceType {
